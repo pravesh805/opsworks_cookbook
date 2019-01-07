@@ -8,9 +8,6 @@ package 'haproxy' do
   action :install
 end
 
-service "haproxy" do
-  action [:enable, :start]
-end
 
 directory "#{node[:haproxy][:dir]}/ssl" do
   action :create
@@ -29,6 +26,7 @@ bash 'pem_file_existence_and_restart_haproxy' do
     done
   EOF
   action :nothing
+  notifies :enable, resources(:service => 'haproxy')
   notifies :start, resources(:service => 'haproxy')
   timeout 70
 end
@@ -106,7 +104,7 @@ end
 
 execute "echo 'checking if haproxy is not running - if so start it'" do
   not_if "pgrep haproxy"
-  notifies :start, "service[haproxy]"
+  notifies :enable, "service[haproxy]"
 end
  
 bash 'pem_file_existence_and_restart_haproxy' do
