@@ -1,0 +1,51 @@
+<VirtualHost *:<%= @port %>>
+        ServerName <%= @servername %>
+        ServerAlias www.<%= @servername %>
+        DocumentRoot <%= @document_root %>
+
+        LogLevel info
+        ErrorLog /var/log/apache2/<%= @name %>-error.log
+        CustomLog /var/log/apache2/<%= @name %>-access.log combined
+
+
+        <Directory <%= @document_root %>/>
+            Options FollowSymLinks
+            AllowOverride All
+            Require all granted
+        </Directory>
+
+        <Directory ~ "\.svn">
+		    Order allow,deny
+		    Deny from all
+		</Directory>
+
+		<Directory ~ "\.git">
+			Order allow,deny
+			Deny from all
+		</Directory>
+
+        #Protection Level
+  <% if node[:apache][:protection] == 'all' -%>
+    <Directory <%= @document_root %>>
+        AuthType Basic
+        AuthName "Restricted Content"
+        AuthUserFile /etc/htpasswd
+        Require valid-user
+    </Directory>
+    <% if !(node[:apache][:allowed_pass].nil? || node[:apache][:allowed_pass].empty?)  -%>
+    <% node[:apache][:allowed_pass].each do |a| %>
+     <Location <%= a %>>
+       allow from all
+       Satisfy Any
+     </Location>
+    <% end %>
+    <% end %>
+  <% elsif node[:apache][:protection] == 'login' -%>
+    <Directory <%= @document_root %>wp-login.php>
+        AuthType Basic
+        AuthName "Restricted Content"
+        AuthUserFile /etc/apache2/htpasswd
+        Require valid-user
+    </Directory>
+  <% end -%>
+</VirtualHost>
