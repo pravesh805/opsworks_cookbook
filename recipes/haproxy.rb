@@ -15,33 +15,32 @@ directory "#{node[:haproxy][:dir]}/ssl" do
   group 'root'
 end
 
- 
-node[:deploy].each do |application, deploy|
+search('aws_opsworks_app', 'deploy:true').each do |app|
 
-  template "#{node[:haproxy][:dir]}/ssl/#{deploy[:domains].first}.crt" do
+  template "#{node[:haproxy][:dir]}/ssl/#{app[:domains].first}.crt" do
       mode 0600
       source 'haproxy/ssl.key.erb'
-      variables :key => deploy[:ssl_certificate]
+      variables :key => app[:ssl_certificate]
       only_if do
-        deploy[:ssl_support]
+        app[:ssl_support]
       end
   end
 
-  template "#{node[:haproxy][:dir]}/ssl/#{deploy[:domains].first}.key" do
+  template "#{node[:haproxy][:dir]}/ssl/#{app[:domains].first}.key" do
     mode 0600
     source 'haproxy/ssl.key.erb'
-    variables :key => deploy[:ssl_certificate_key]
+    variables :key => app[:ssl_certificate_key]
     only_if do
-      deploy[:ssl_support]
+      app[:ssl_support]
     end
   end
 
-  template "#{node[:haproxy][:dir]}/ssl/#{deploy[:domains].first}.ca" do
+  template "#{node[:haproxy][:dir]}/ssl/#{app[:domains].first}.ca" do
     mode 0600
     source 'haproxy/ssl.key.erb'
-    variables :key => deploy[:ssl_certificate_ca]
+    variables :key => app[:ssl_certificate_ca]
     only_if do
-      deploy[:ssl_support] && deploy[:ssl_certificate_ca]
+      app[:ssl_support] && app[:ssl_certificate_ca]
     end
   end
 end
