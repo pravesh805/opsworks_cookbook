@@ -8,6 +8,10 @@ package 'haproxy' do
   action :install
 end
 
+service "haproxy" do
+  action [:enable, :start]
+end
+
 directory "#{node[:haproxy][:dir]}/ssl" do
   action :create
   mode 0755
@@ -109,10 +113,5 @@ end
  
 bash 'pem_file_existence_and_restart_haproxy' do
   action :run
-end
- 
-service 'haproxy' do
-  supports :restart => true, :status => true
-  action [:enable, :start]
 end
 
