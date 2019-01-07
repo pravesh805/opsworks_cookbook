@@ -8,10 +8,6 @@ package 'haproxy' do
   action :install
 end
 
-service "haproxy" do
-  action [:enable, :start]
-end
-
 directory "#{node[:haproxy][:dir]}/ssl" do
   action :create
   mode 0755
@@ -29,7 +25,7 @@ bash 'pem_file_existence_and_restart_haproxy' do
     done
   EOF
   action :nothing
-  notifies :restart, resources(:service => 'haproxy')
+  notifies :start, resources(:service => 'haproxy')
   timeout 70
 end
 
@@ -92,7 +88,6 @@ template "/etc/haproxy/haproxy.cfg" do
         :backend_port  => (node[:haproxy][:backend_port] rescue nil),
         # Domain
         :redirect_domain           => (node[:haproxy][:hostname]))
-      notifies :run, resources(:bash => 'pem_file_existence_and_restart_haproxy')
 end
  
 Chef::Log.info("Finished Creating HaProxy cfg...")
@@ -105,7 +100,6 @@ template "/etc/default/haproxy" do
       notifies :run, resources(:bash => 'pem_file_existence_and_restart_haproxy')
 end
 
-
 execute "echo 'checking if haproxy is not running - if so start it'" do
   not_if "pgrep haproxy"
   notifies :start, "service[haproxy]"
@@ -114,4 +108,3 @@ end
 bash 'pem_file_existence_and_restart_haproxy' do
   action :run
 end
-
