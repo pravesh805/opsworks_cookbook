@@ -13,6 +13,8 @@ default['apache']['dir']     = "/etc/apache2"
 default[:apache][:document_root] = '/var/www/html'
 default[:apache][:log_dir]       = '/var/log/apache2'
 
+#haproxy
+default['haproxy']['dir']     = "/etc/haproxy"
 #Varnish configrations
 default['varnish']['dir']     = "/etc/varnish"
 default['varnish']['default'] = "/etc/default/varnish"
