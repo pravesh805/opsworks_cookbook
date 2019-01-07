@@ -8,6 +8,10 @@ package 'haproxy' do
   action :install
 end
 
+service "haproxy" do
+  action [:enable, :start]
+end
+
 directory "#{node[:haproxy][:dir]}/ssl" do
   action :create
   mode 0755
