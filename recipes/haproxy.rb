@@ -47,7 +47,7 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
   Chef::Log.info("debugging haproxy recipe...")
   Chef::Log.info(app[:ssl_certificate_key])
 
-  ssl_pem = app[:ssl_certificate_key] + "\n" + app[:ssl_certificate] + "\n" + app[:ssl_certificate_ca]
+  ssl_pem = app[:ssl_configuration].try(:[], :private_key) + "\n" + app[:ssl_configuration].try(:[], :certificate) + "\n" + app[:ssl_configuration].try(:[], :chain)
 
   template "#{node[:haproxy][:dir]}/ssl/#{node[:haproxy][:cert]}.pem" do
     mode 0600
