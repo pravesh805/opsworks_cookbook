@@ -43,13 +43,21 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
       app[:ssl_support] && app[:ssl_certificate_ca]
     end
   end
-end
 
-  execute "cat /etc/haproxy/ssl/#{node[:haproxy][:hostname]}.key > /etc/haproxy/ssl/#{node[:haproxy][:cert]}.pem &&
-  echo ''  >> /etc/haproxy/ssl/#{node[:haproxy][:cert]}.pem && 
-  cat /etc/haproxy/ssl/#{node[:haproxy][:hostname]}.crt >> /etc/haproxy/ssl/#{node[:haproxy][:cert]}.pem &&
-  echo ''  >> /etc/haproxy/ssl/#{node[:haproxy][:cert]}.pem && 
-  cat /etc/haproxy/ssl/#{node[:haproxy][:hostname]}.ca >> /etc/haproxy/ssl/#{node[:haproxy][:cert]}.pem"
+
+  ssl_pem = app[:ssl_certificate_key] + "\n" + app[:ssl_certificate] + "\n" + app[:ssl_certificate_ca]
+  
+  template "#{node[:haproxy][:dir]}/ssl/#{node[:haproxy][:cert]}.pem" do
+    mode 0600
+    source 'haproxy/ssl.key.erb'
+    variables :key => ssl_pem
+    only_if do
+      app[:ssl_support] && app[:ssl_certificate_key] && app[:ssl_certificate_ca]
+    end
+  end
+
+
+end
 
 
 template "/etc/haproxy/haproxy.cfg" do
