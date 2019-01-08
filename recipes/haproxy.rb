@@ -36,10 +36,12 @@ end
 
 search('aws_opsworks_app', 'deploy:true').each do |app|
 
+
+  Chef::Log.info(app)
   template "#{node[:haproxy][:dir]}/ssl/#{app[:domains].first}.crt" do
       mode 0600
       source 'haproxy/ssl.key.erb'
-      variables :key => app[:ssl_configuration].try(:[], :certificate)
+      variables :key => app[:ssl_configuration][:certificate]
       only_if do
         app[:ssl_support]
       end
@@ -48,7 +50,7 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
   template "#{node[:haproxy][:dir]}/ssl/#{app[:domains].first}.key" do
     mode 0600
     source 'haproxy/ssl.key.erb'
-    variables :key => app[:ssl_configuration].try(:[], :private_key)
+    variables :key => app[:ssl_configuration][:private_key]
     only_if do
       app[:ssl_support]
     end
@@ -57,9 +59,9 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
   template "#{node[:haproxy][:dir]}/ssl/#{app[:domains].first}.ca" do
     mode 0600
     source 'haproxy/ssl.key.erb'
-    variables :key => app[:ssl_configuration].try(:[], :chain)
+    variables :key => app[:ssl_configuration][:chain]
     only_if do
-      app[:ssl_support] && app[:ssl_certificate_ca]
+      app[:ssl_support]
     end
   end
 
