@@ -47,6 +47,9 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
 	        :ssh_key => app_source[:ssh_key]
 	    ) if app_source[:type].to_s == 'git'
 
+	    puts app.inspect
+	    puts app_source.inspect
+	    
 	    deploy deploy_to do
 	      provider Chef::Provider::Deploy::Timestamped
 	      keep_releases 2
