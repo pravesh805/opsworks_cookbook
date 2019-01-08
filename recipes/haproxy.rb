@@ -35,15 +35,12 @@ end
 # end
 
 search('aws_opsworks_app', 'deploy:true').each do |app|
-
-
-  Chef::Log.info(app)
   template "#{node[:haproxy][:dir]}/ssl/#{app[:domains].first}.crt" do
       mode 0600
       source 'haproxy/ssl.key.erb'
       variables :key => app[:ssl_configuration][:certificate]
       only_if do
-        app[:ssl_support]
+        app[:enable_ssl] && app[:ssl_configuration][:certificate]
       end
   end
 
@@ -52,7 +49,7 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
     source 'haproxy/ssl.key.erb'
     variables :key => app[:ssl_configuration][:private_key]
     only_if do
-      app[:ssl_support]
+      app[:enable_ssl] && app[:ssl_configuration][:private_key]
     end
   end
 
@@ -61,14 +58,13 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
     source 'haproxy/ssl.key.erb'
     variables :key => app[:ssl_configuration][:chain]
     only_if do
-      app[:ssl_support]
+      app[:enable_ssl] && app[:ssl_configuration][:chain]
     end
   end
 
   Chef::Log.info("debugging haproxy recipe...")
-  Chef::Log.info(app[:ssl_certificate_key])
 
-  ssl_pem = app[:ssl_configuration].try(:[], :private_key) + "\n" + app[:ssl_configuration].try(:[], :certificate) + "\n" + app[:ssl_configuration].try(:[], :chain)
+  ssl_pem = app[:ssl_configuration][:private_key] + "\n" + app[:ssl_configuration][:certificate] + "\n" + app[:ssl_configuration][:chain]
 
   template "#{node[:haproxy][:dir]}/ssl/#{node[:haproxy][:cert]}.pem" do
     mode 0600
@@ -78,12 +74,14 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
       app[:ssl_support] && app[:ssl_certificate] && app[:ssl_certificate_key] && app[:ssl_certificate_ca]
     end
   end
-
-
 end
-
 
 execute "echo 'checking if haproxy is not running - if so start it'" do
   not_if "pgrep haproxy"
-  notifies :enable, "service[haproxy]"
+  notifies :start, "service[haproxy]"
+end
+
+service 'haproxy' do
+  supports :restart => true, :status => true
+  action [:enable, :start]
 end
