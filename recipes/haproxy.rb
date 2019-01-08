@@ -71,7 +71,7 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
     source 'haproxy/ssl.key.erb'
     variables :key => ssl_pem
     only_if do
-      app[:ssl_support] && app[:ssl_certificate] && app[:ssl_certificate_key] && app[:ssl_certificate_ca]
+      app[:enable_ssl] && app[:ssl_configuration][:certificate] && app[:ssl_configuration][:private_key] && app[:ssl_configuration][:chain]
     end
   end
 end
