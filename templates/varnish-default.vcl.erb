@@ -42,7 +42,7 @@ sub vcl_recv {
 
   # Unset headers that might cause us to cache duplicate infos
   unset req.http.Accept-Language;
-  unset req.http.User-Agent;
+  #unset req.http.User-Agent;
 	unset req.http.Server;
 	# The purge...no idea if this works
   #std.syslog(180, "RECV: " + req.http.host + req.url);
