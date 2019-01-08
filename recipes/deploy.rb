@@ -51,6 +51,7 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
 	    Chef::Log.info(app_source.inspect)
 
 	    deploy deploy_to do
+	      provider Chef::Provider::Deploy::Timestamped
 	      keep_releases 2
 	      repository app_source[:url]
 	      user release_user
@@ -64,7 +65,7 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
 	      symlinks({"system" => "public/system", "pids" => "tmp/pids", "log" => "log", "config/keys.php" => "keys.php", "config/health-check.php" => "health-check.php"})
 	      action :deploy
 
-	      case app_source[:type]
+	      case app_source[:type].to_s
 	        when 'git'
 	          scm_provider Chef::Provider::Git
 	          enable_submodules true
@@ -76,7 +77,7 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
 	          svn_arguments "--no-auth-cache --non-interactive --trust-server-cert"
 	          svn_info_args "--no-auth-cache --non-interactive --trust-server-cert"
 	        else
-	          raise "unsupported SCM type #{app_source[:type].inspect}"
+	          raise "unsupported SCM type"
 	      end
 	    end
 	  else
