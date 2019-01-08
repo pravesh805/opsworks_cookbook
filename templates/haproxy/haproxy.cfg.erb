@@ -104,7 +104,7 @@ backend <%= key %>
     reqirep  ^(GET|POST|HEAD)\ /<%= value['slug'] %>/(.*)     \1\ /\2
     # Rewrite redirects as ProxyPassReverse does
     acl response-is-redirect res.hdr(Location) -m found
-    rspirep ^Location:\ (http|https)://<%= value['host'] %>\/(.*)   Location:\ \1://<%= node[:haproxy][:doamin] %>/<%= value['slug'] %>/\2  if response-is-redirect
+    rspirep ^Location:\ (http|https)://<%= value['host'] %><%= value['path'] %>\/(.*)   Location:\ \1://<%= node[:haproxy][:doamin] %>/<%= value['slug'] %>/\2  if response-is-redirect
     #option forwardfor  
 <% end %>
 <% end %>

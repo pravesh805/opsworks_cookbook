@@ -47,8 +47,6 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
 	        :ssh_key => app_source[:ssh_key]
 	    ) if app_source[:type].to_s == 'git'
 
-	    Chef::Log.info(app.inspect)
-	    Chef::Log.info(app_source.inspect)
 
 	    deploy deploy_to do
 	      provider Chef::Provider::Deploy::Timestamped
@@ -77,14 +75,14 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
 	          svn_arguments "--no-auth-cache --non-interactive --trust-server-cert"
 	          svn_info_args "--no-auth-cache --non-interactive --trust-server-cert"
 	        else
-	          raise "unsupported SCM type"
+	          raise "unsupported SCM type #{app_source[:type].inspect}"
 	      end
 	    end
-	  else
-	    Chef::Log.info("********** Running Symlink Recipes '#{app[:name]}' **********")
-	    include_recipe "deploy::before_symlink"
-	    include_recipe "deploy::after_restart"
-	  end
+	else
+		Chef::Log.info("********** Running Symlink Recipes '#{app[:name]}' **********")
+		include_recipe "deploy::before_symlink"
+		include_recipe "deploy::after_restart"
+	end
 end
 
  
