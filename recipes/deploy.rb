@@ -51,7 +51,6 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
 	    Chef::Log.info(app_source.inspect)
 
 	    deploy deploy_to do
-	      provider Chef::Provider::Deploy::Timestamped
 	      keep_releases 2
 	      repository app_source[:url]
 	      user release_user
@@ -65,7 +64,7 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
 	      symlinks({"system" => "public/system", "pids" => "tmp/pids", "log" => "log", "config/keys.php" => "keys.php", "config/health-check.php" => "health-check.php"})
 	      action :deploy
 
-	      case app_source[:type].to_s
+	      case app_source[:type]
 	        when 'git'
 	          scm_provider Chef::Provider::Git
 	          enable_submodules true
