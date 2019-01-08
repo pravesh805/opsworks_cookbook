@@ -5,6 +5,7 @@
 # Copyright:: 2018, Moayyad Faris, All Rights Reserved.
 
 # Create the Wordpress config file wp-config.php with corresponding values
+
 search('aws_opsworks_app', 'deploy:true').each do |app|
   Chef::Log.info("Configuring WP app #{app[:shortname]}...")
 

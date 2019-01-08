@@ -4,6 +4,8 @@
 #
 # Copyright:: 2018, Moayyad Faris, All Rights Reserved.
 
+Chef::Log.info("Start deplying haproxy....")
+
 package 'haproxy' do
   action :install
 end

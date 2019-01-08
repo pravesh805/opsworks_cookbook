@@ -4,6 +4,8 @@
 #
 # Copyright:: 2018, Moayyad Faris, All Rights Reserved.
 
+Chef::Log.info("Start configuring haproxy....")
+
 template "/etc/haproxy/haproxy.cfg" do
       source "haproxy/haproxy.cfg.erb"
       mode 0660
@@ -14,8 +16,10 @@ template "/etc/haproxy/haproxy.cfg" do
         :cert         => (node[:haproxy][:cert] rescue nil),
         :backend_host  => (node[:haproxy][:backend_host] rescue nil),
         :backend_port  => (node[:haproxy][:backend_port] rescue nil),
+        :reverse_proxy  => (node[:haproxy][:reverse_proxy] rescue nil),
+        :restricted_page  => (node[:haproxy][:restricted_page] rescue nil),
         # Domain
-        :redirect_domain           => (node[:haproxy][:hostname]))
+        :domain           => (node[:haproxy][:hostname]))
       notifies :restart, "service[haproxy]"
 end
  
