@@ -75,6 +75,21 @@ execute "enable-headers" do
   action :run
 end
 
+execute "enable-proxy" do
+  command "a2enmod proxy"
+  action :run
+end
+
+execute "enable-proxy-http" do
+  command "a2enmod proxy_http"
+  action :run
+end
+
+execute "enable-proxy-html" do
+  command "a2enmod proxy_html"
+  action :run
+end
+
 
 Chef::Log.info("Create Virtual Hosts Files......")
 #Virtual Hosts Files
