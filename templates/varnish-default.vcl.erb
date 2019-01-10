@@ -51,13 +51,9 @@ sub vcl_recv {
     if (!req.http.X-VARNISH-SECRET == "<%= node['varnish']['secret_key'] %>") {
       return (synth(405, "This IP is not allowed to send PURGE requests."));
     }	
-  	#ban("req.http.host ~ " + "virginmobile.sa");
-		#std.syslog(0, client.ip);  
-		#if (!client.ip ~ purge) {
-		  #return(synth(405,"Not allowed. Client IP:" + client.ip));
-		#}
-	  ban("req.http.host ~ " + "virginmobile.sa");
-		#return (purge);
+  	 
+	  ban("req.http.host ~ " + "<%= node['varnish']['domain'] %>");
+		
   }
   if ( std.port(server.ip) == 6080) {
     set req.http.x-redir = "https://" + req.http.host + req.url;
