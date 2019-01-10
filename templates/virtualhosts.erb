@@ -63,10 +63,10 @@
         Deny from all
         <% if !(node[:apache][:allowed_ips].nil? || node[:apache][:allowed_ips].empty?)  -%>
         <% node[:apache][:allowed_ips].each do |a| %>
-            allow from <%= a %>
+            SetEnvIf X-Forwarded-For <%= a %> allow
         <% end %>
         <% end %>
-        
+        Allow from env=allow
     </Directory>
     <% if !(node[:apache][:allowed_pass].nil? || node[:apache][:allowed_pass].empty?)  -%>
     <% node[:apache][:allowed_pass].each do |a| %>
@@ -82,9 +82,10 @@
         Deny from all
         <% if !(node[:apache][:allowed_ips].nil? || node[:apache][:allowed_ips].empty?)  -%>
         <% node[:apache][:allowed_ips].each do |a| %>
-            allow from <%= a %>
+            SetEnvIf X-Forwarded-For <%= a %> allow
         <% end %>
         <% end %>
+        Allow from env=allow
     </Directory>
   <% end -%>
 </VirtualHost>
