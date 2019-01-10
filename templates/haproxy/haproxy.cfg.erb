@@ -93,6 +93,8 @@ backend application-backend
     http-request auth if restricted_page
     <% end -%>
     #enter the IP of your application here
+    mode http 
+    option httpchk HEAD /<%= node[:haproxy][:heath_check] %> HTTP/1.1\r\nHost:\ <%= node[:haproxy][:hostname] %>
     server node1 <%= @backend_host %>:<%= @backend_port %> cookie A check
 
 <% if !(node[:haproxy][:reverse_proxy].nil? || node[:haproxy][:reverse_proxy].empty?)  -%>
