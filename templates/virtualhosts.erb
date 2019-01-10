@@ -87,5 +87,10 @@
         <% end %>
         Allow from env=allow
     </Directory>
+    <% elsif node[:apache][:protection] == 'block' -%>
+     <Directory <%= @document_root %>wp-login.php>
+        order deny,allow
+        Deny from all
+    </Directory>
   <% end -%>
 </VirtualHost>
