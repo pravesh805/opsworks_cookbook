@@ -24,8 +24,18 @@
 			Deny from all
 		</Directory>
 
+        <% if !(node[:apache][:ReverseProxy].nil? || node[:apache][:ReverseProxy].empty?)  -%>
+          <% node[:apache][:ReverseProxy].each do |a| %>
+             <Location /<%= a.path %>>
+                #generater R-Proxy
+                ProxyPass <%= a.url %>
+                ProxyPassReverse <%= a.url %>
+              </Location>
+          <% end %>
+        <% end -%>
+
         #Protection Level
-  <% if node[:apache][:protection] == 'all' -%>
+  <% if node[:apache][:protection] == 'htpasswd-all' -%>
     <Directory <%= @document_root %>>
         AuthType Basic
         AuthName "Restricted Content"
@@ -40,12 +50,41 @@
      </Location>
     <% end %>
     <% end %>
-  <% elsif node[:apache][:protection] == 'login' -%>
+  <% elsif node[:apache][:protection] == 'htpasswd-login' -%>
     <Directory <%= @document_root %>wp-login.php>
         AuthType Basic
         AuthName "Restricted Content"
         AuthUserFile /etc/apache2/htpasswd
         Require valid-user
+    </Directory>
+  <% elsif node[:apache][:protection] == 'ip-all' -%>
+    <Directory <%= @document_root %>>
+        order deny,allow
+        Deny from all
+        <% if !(node[:apache][:allowed_ips].nil? || node[:apache][:allowed_ips].empty?)  -%>
+        <% node[:apache][:allowed_ips].each do |a| %>
+            allow from <%= a %>
+        <% end %>
+        <% end %>
+        
+    </Directory>
+    <% if !(node[:apache][:allowed_pass].nil? || node[:apache][:allowed_pass].empty?)  -%>
+    <% node[:apache][:allowed_pass].each do |a| %>
+     <Location <%= a %>>
+       allow from all
+       Satisfy Any
+     </Location>
+    <% end %>
+    <% end %>
+  <% elsif node[:apache][:protection] == 'ip-login' -%>
+  <Directory <%= @document_root %>wp-login.php>
+        order deny,allow
+        Deny from all
+        <% if !(node[:apache][:allowed_ips].nil? || node[:apache][:allowed_ips].empty?)  -%>
+        <% node[:apache][:allowed_ips].each do |a| %>
+            allow from <%= a %>
+        <% end %>
+        <% end %>
     </Directory>
   <% end -%>
 </VirtualHost>

@@ -141,7 +141,7 @@ sub vcl_backend_response {
   } elsif (beresp.http.set-cookie) {
     if (beresp.http.set-cookie ~ "pll_language"){
       # Varnish determined the object was cacheable
-      set beresp.http.X-Cacheable = "YES2";
+      set beresp.http.X-Cacheable = "NO:PLL";
 
       # Remove Expires from backend, it's not long enough
       unset beresp.http.expires;
