@@ -97,11 +97,9 @@ execute "enable-proxy-html" do
   action :run
 end
 
-if (node[:apache][:ssl_enabled])
-  execute "enable-ssl" do
+execute "enable-ssl" do
     command "a2enmod ssl"
     action :run
-  end
 end
 
 
