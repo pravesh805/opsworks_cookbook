@@ -15,6 +15,8 @@ default[:apache][:log_dir]       = '/var/log/apache2'
 
 #haproxy
 default['haproxy']['dir']     = "/etc/haproxy"
+default['haproxy']['inter']     = "2s"
+default['haproxy']['fall']     = "2"
 #Varnish configrations
 default['varnish']['dir']     = "/etc/varnish"
 default['varnish']['default'] = "/etc/default/varnish"
