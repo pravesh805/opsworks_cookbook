@@ -49,6 +49,7 @@ frontend https-in
 
     <% if !(node[:haproxy][:redirects].nil? || node[:haproxy][:redirects].empty?)  -%>
     <% node[:haproxy][:redirects].each do |key, value| %>
+    http-request redirect scheme https drop-query append-slash if { path -m str /<%= key %> }
     acl redirect_<%= key %> path_beg /<%= key %>/
     http-request redirect location /<%= value %>/ if redirect_<%= key %>
     <% end %>
