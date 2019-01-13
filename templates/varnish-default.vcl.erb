@@ -173,7 +173,8 @@ sub vcl_backend_response {
     unset beresp.http.expires;
 
     # Set the clients TTL on this object
-    set beresp.http.Cache-Control = "max-age=31536000";
+    #TO-DO pass if passed from vcl_recv func
+    #set beresp.http.Cache-Control = "max-age=31536000";
 
     # Set how long Varnish will keep it
     set beresp.ttl = 1w;
@@ -255,6 +256,8 @@ sub vcl_deliver {
     set resp.http.X-Cache = "HIT";
   } else {
     set resp.http.X-Cache = "MISS";
+    unset beresp.http.Cache-Control;
+    unset beresp.http.Expires;
   }
 	unset resp.http.Server;
    #unset resp.http.age;

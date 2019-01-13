@@ -94,3 +94,36 @@
     </Directory>
   <% end -%>
 </VirtualHost>
+
+<% if (node[:apache][:ssl_enabled]) -%>
+<VirtualHost *:443>
+  ServerName <%= @servername %>
+  ServerAlias www.<%= @servername %>
+  DocumentRoot <%= @document_root %>
+
+  SSLEngine on
+  SSLProxyEngine on
+  SSLCertificateFile /etc/apache2/ssl/<%= @servername %>.crt
+  SSLCertificateKeyFile /etc/apache2/ssl/<%= @servername %>.key
+  SSLCACertificateFile /etc/apache2/ssl/<%= @servername %>.ca
+  SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0
+
+  RequestHeader set X-Forwarded-Proto "https"
+
+  LogLevel info
+  ErrorLog /var/log/apache2/<%= @name %>-error.log
+  CustomLog /var/log/apache2/<%= @name %>-access.log combined
+
+  FileETag none
+<% if !(node[:apache][:ReverseProxy].nil? || node[:apache][:ReverseProxy].empty?)  -%>
+          <% node[:apache][:ReverseProxy].each do |a| %>
+             <Location /<%= a.path %>>
+                #generater R-Proxy
+                ProxyPass <%= a.url %>
+                ProxyPassReverse <%= a.url %>
+              </Location>
+          <% end %>
+        <% end -%>
+      
+</VirtualHost>
+<% end -%>

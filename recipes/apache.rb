@@ -14,6 +14,13 @@ service "apache2" do
   action [:enable, :start]
 end
 
+directory "#{node[:apache][:dir]}/ssl" do
+  action :create
+  mode 0755
+  owner 'root'
+  group 'root'
+end
+
 bash 'logdir_existence_and_restart_apache2' do
   code <<-EOF
     until
@@ -125,6 +132,33 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
   execute "keepalive" do
     command "sed -i 's/KeepAlive On/KeepAlive Off/g' /etc/apache2/apache2.conf"
     action :run
+  end
+
+  template "#{node[:apache][:dir]}/ssl/#{app[:domains].first}.crt" do
+      mode 0600
+      source 'apache/ssl.key.erb'
+      variables :key => app[:ssl_configuration][:certificate]
+      only_if do
+        app[:enable_ssl] && app[:ssl_configuration][:certificate]
+      end
+  end
+
+  template "#{node[:apache][:dir]}/ssl/#{app[:domains].first}.key" do
+    mode 0600
+    source 'apache/ssl.key.erb'
+    variables :key => app[:ssl_configuration][:private_key]
+    only_if do
+      app[:enable_ssl] && app[:ssl_configuration][:private_key]
+    end
+  end
+
+  template "#{node[:apache][:dir]}/ssl/#{app[:domains].first}.ca" do
+    mode 0600
+    source 'apache/ssl.key.erb'
+    variables :key => app[:ssl_configuration][:chain]
+    only_if do
+      app[:enable_ssl] && app[:ssl_configuration][:chain]
+    end
   end
 
    
