@@ -82,17 +82,6 @@ backend application-backend
     option httpclose
     option forwardfor
     cookie JSESSIONID prefix
-    <% if node[:haproxy][:protection] == 'all' -%>
-    <% if !(node[:haproxy][:allowed_pass].nil? || node[:haproxy][:allowed_pass].empty?)  -%>
-    <% node[:haproxy][:allowed_pass].each do |a| %>
-    acl restricted_page path_beg <%= a %>
-    <% end %>
-    <% end %>
-    http-request auth if !restricted_page
-    <% else -%>
-    acl restricted_page path_beg /wp-login.php
-    http-request auth if restricted_page
-    <% end -%>
     #enter the IP of your application here
     option httpchk GET /<%= node[:haproxy][:heath_check] %>
     default-server inter <%= node[:haproxy][:inter] %> fall <%= node[:haproxy][:fall] %>
