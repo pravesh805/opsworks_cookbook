@@ -1,4 +1,9 @@
 <VirtualHost *:<%= @port %>>
+        <% if (node[:apache][:ssl_enabled]) -%>
+        RewriteEngine On
+        RewriteCond %{HTTP:X-Forwarded-Proto} =http
+        RewriteRule .* https://%{HTTP:Host}%{REQUEST_URI} [L,R=permanent]
+        <% end -%>
         ServerName <%= @servername %>
         ServerAlias www.<%= @servername %>
         DocumentRoot <%= @document_root %>
