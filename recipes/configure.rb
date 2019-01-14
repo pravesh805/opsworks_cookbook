@@ -106,7 +106,7 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
     owner 'root'
     mode 0644
     variables(
-      :region => node[:apache]["region"]
+      :region => (deploy[:aws][:s3_region] rescue nil)
     )
   end
 
