@@ -100,5 +100,27 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
     variables(:domain => (app[:domains].first))
   end
 
+  template "#{node[:aws][:dir]}/config" do
+    source "aws/config.erb"
+    group 'root'
+    owner 'root'
+    mode 0644
+    variables(
+      :region => node[:apache]["region"]
+    )
+  end
+
+  template "#{node[:aws][:dir]}/credentials" do
+    source "aws/credentials.erb"
+    group 'root'
+    owner 'root'
+    mode 0644
+    variables(
+      :aws_access_key_id => (deploy[:aws][:s3_access_key] rescue nil),
+      :aws_secret_access_key => (deploy[:aws][:s3_secret_key] rescue nil),
+      :aws_region => (deploy[:aws][:s3_region] rescue nil)
+    )
+  end
+
  
 end

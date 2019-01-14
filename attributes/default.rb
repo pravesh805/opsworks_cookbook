@@ -1,3 +1,5 @@
+default['aws']['dir'] = "~/.aws"
+
 default["apache2"]["sites"]["example.com"] = { "port" => 80, "servername" => "example.com", "serveradmin" => "webmaster@example.com" }
 # Default configuration for the AWS OpsWorks cookbook for Wordpress
 #

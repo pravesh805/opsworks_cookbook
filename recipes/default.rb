@@ -37,3 +37,10 @@ execute "install awscli" do
   command "pip install awscli"
   action :run
 end
+
+directory "#{node[:aws][:dir]}" do
+  action :create
+  mode 0755
+  owner 'root'
+  group 'root'
+end
