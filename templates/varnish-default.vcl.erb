@@ -254,10 +254,11 @@ sub vcl_deliver {
   }
   if (obj.hits > 0) {
     set resp.http.X-Cache = "HIT";
+    set resp.http.Cache-Control = "max-age=31536000";
   } else {
     set resp.http.X-Cache = "MISS";
-    unset beresp.http.Cache-Control;
-    unset beresp.http.Expires;
+    unset resp.http.Cache-Control;
+    unset resp.http.Expires;
   }
 	unset resp.http.Server;
    #unset resp.http.age;
