@@ -31,3 +31,9 @@ end
 package 'git'
 package 'tree'
 package 'curl'
+package 'python-pip'
+
+execute "install awscli" do
+  command "pip install awscli"
+  action :run
+end
