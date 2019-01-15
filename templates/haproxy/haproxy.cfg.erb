@@ -68,7 +68,9 @@ frontend https-in
 
     <% if !(node[:haproxy][:reverse_proxy].nil? || node[:haproxy][:reverse_proxy].empty?)  -%>
     <% node[:haproxy][:reverse_proxy].each do |key, value| %>
+    <% if (value['force_slash'])  -%>
     http-request redirect scheme https drop-query append-slash if { path -m str /<%= value['slug'] %> }
+    <% end -%>
     acl prefixed-with-<%= key %>  path_beg /<%= value['slug'] %>/
     use_backend <%= key %> if prefixed-with-<%= key %>
     <% end %>
@@ -94,7 +96,11 @@ backend <%= key %>
     server node1 <%= value['host'] %>:80
     # Map url path as ProxyPass does
     <% if (value['path'].nil?)  -%>
+    <% if (value['force_slash'])  -%>
     reqirep  ^(GET|POST|HEAD)\ /<%= value['slug'] %>/(.*)     \1\ /\2
+    <% else  -%>
+    reqirep  ^(GET|POST|HEAD)\ /<%= value['slug'] %>(.*)     \1\ /\2
+    <% end -%>
     <% end -%>
     # Rewrite redirects as ProxyPassReverse does
     acl response-is-redirect res.hdr(Location) -m found
