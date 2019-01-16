@@ -56,7 +56,7 @@
     <% end %>
     <% end %>
   <% elsif node[:apache][:protection] == 'htpasswd-login' -%>
-    <Directory <%= @document_root %>wp-login.php>
+    <Directory <%= @document_root %>/wp-login.php>
         AuthType Basic
         AuthName "Restricted Content"
         AuthUserFile /etc/apache2/htpasswd
@@ -82,7 +82,7 @@
     <% end %>
     <% end %>
   <% elsif node[:apache][:protection] == 'ip-login' -%>
-  <Directory <%= @document_root %>wp-login.php>
+  <Directory <%= @document_root %>/wp-login.php>
         order deny,allow
         Deny from all
         <% if !(node[:apache][:allowed_ips].nil? || node[:apache][:allowed_ips].empty?)  -%>
@@ -92,8 +92,8 @@
         <% end %>
         Allow from env=allow
     </Directory>
-    <% elsif node[:apache][:protection] == 'block' -%>
-     <Directory <%= @document_root %>wp-login.php>
+    <% elsif node[:apache][:protection] == 'block-login' -%>
+     <Directory <%= @document_root %>/wp-login.php>
         order deny,allow
         Deny from all
     </Directory>
