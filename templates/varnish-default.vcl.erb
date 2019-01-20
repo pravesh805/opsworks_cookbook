@@ -90,13 +90,19 @@ sub vcl_recv {
   }
 	# always pass through posted requests and those with basic auth
   # if ( req.request == "POST" || req.http.Authorization ) {
-	if ( req.method == "POST" || req.http.Authorization )
+	if ( req.http.Authorization )
   {        		
     return (pass);
   }
+
+  if ( req.method == "POST" || req.url ~ "api/" )
+  {           
+    return (pass);
+  }
+
 	
   # pass wp-admin cookies
-  if (req.http.cookie) {
+  if (req.http.cookie) Ż
     if (req.http.cookie ~ "(wordpress_|wp-settings-|wsc_session)") {
         return(pass);
     } else {
@@ -106,7 +112,7 @@ sub vcl_recv {
   # Disable caching for custom routes
     <% if !(node[:varnish][:pass_paths].nil? || node[:varnish][:pass_paths].empty?)  -%>
     <% node[:varnish][:pass_paths].each do |a| %>
-    if ( req.url ~ "^<%= a %>"){
+    if ( req.url ~ "<%= a %>"){
         return(pass);
     }
     <% end %>
