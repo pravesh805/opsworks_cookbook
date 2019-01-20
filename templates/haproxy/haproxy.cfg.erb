@@ -36,6 +36,10 @@ defaults
         errorfile 503 /etc/haproxy/errors/503.http
         errorfile 504 /etc/haproxy/errors/504.http
 
+<% if !(node[:haproxy][:auth].nil? || node[:haproxy][:auth].empty?)  -%>
+userlist UsersFor_WP
+    user "<%= node[:haproxy][:auth][:user] %>" insecure-password "<%= node[:haproxy][:auth][:password] %>"
+<% end %>
 
 frontend http-in
     bind *:80
@@ -47,6 +51,9 @@ frontend https-in
     bind *:443 ssl crt /etc/haproxy/ssl/<%= @cert %>.pem
     reqadd X-Forwarded-Proto:\ https  
 
+    <% if !(node[:haproxy][:auth].nil? || node[:haproxy][:auth].empty?)  -%>
+    acl auth_ok http_auth(UsersFor_WP)
+    <% end %>
     <% if !(node[:haproxy][:redirects].nil? || node[:haproxy][:redirects].empty?)  -%>
     <% node[:haproxy][:redirects].each do |key, value| %>
     http-request redirect scheme https drop-query append-slash if { path -m str /<%= key %> }
@@ -54,7 +61,14 @@ frontend https-in
     http-request redirect location /<%= value %>/ if redirect_<%= key %>
     <% end %>
     <% end %>
-
+    <% if node[:haproxy][:protection] == 'all' -%>
+    <% if !(node[:haproxy][:allowed_pass].nil? || node[:haproxy][:allowed_pass].empty?)  -%>
+    <% node[:haproxy][:allowed_pass].each do |value| %>
+    acl allowed_pass path_beg <%= value %>
+    <% end %>
+    http-request auth if !allowed_pass !auth_ok
+    <% end %>
+    <% end %>
     <% restricted_list = "" %>
     <% if !(node[:haproxy][:restricted_page].nil? || node[:haproxy][:restricted_page].empty?)  -%>
     <% node[:haproxy][:restricted_page].each do |key, value| %>
@@ -64,6 +78,8 @@ frontend https-in
     <% end %>
     acl restricted_default_html path_beg,url_dec -i /default.html
     http-request deny if restricted_default_html <%= restricted_list %>
+
+
     http-request add-header X-CLIENT-IP %[src]
 
     <% if !(node[:haproxy][:reverse_proxy].nil? || node[:haproxy][:reverse_proxy].empty?)  -%>
@@ -92,6 +108,10 @@ backend application-backend
 <% if !(node[:haproxy][:reverse_proxy].nil? || node[:haproxy][:reverse_proxy].empty?)  -%>
 <% node[:haproxy][:reverse_proxy].each do |key, value| %>
 backend <%= key %>
+    <% if node[:haproxy][:protection] == 'all' -%>
+    acl auth_ok http_auth(UsersFor_WP)
+    http-request auth if !auth_ok
+    <% end -%>
     http-request set-header Host <%= value['host'] %>
     server node1 <%= value['host'] %>:80
     # Map url path as ProxyPass does
