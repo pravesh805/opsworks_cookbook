@@ -103,7 +103,7 @@ backend application-backend
     #enter the IP of your application here
     option httpchk GET /<%= node[:haproxy][:heath_check] %>
     default-server inter <%= node[:haproxy][:inter] %> fall <%= node[:haproxy][:fall] %>
-    server node1 <%= @backend_host %>:<%= @backend_port %> cookie A check
+    server node1 <%= @backend_host %>:<%= @backend_port %> cookie A
 
 <% if !(node[:haproxy][:reverse_proxy].nil? || node[:haproxy][:reverse_proxy].empty?)  -%>
 <% node[:haproxy][:reverse_proxy].each do |key, value| %>
