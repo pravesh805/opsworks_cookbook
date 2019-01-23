@@ -41,6 +41,26 @@ userlist UsersFor_WP
     user "<%= node[:haproxy][:auth][:user] %>" insecure-password "<%= node[:haproxy][:auth][:password] %>"
 <% end %>
 
+#:::haproxy
+resolvers myresolver
+    nameserver vpc 172.31.0.2:53
+    resolve_retries       30
+    timeout retry         1s
+    hold valid           10s
+
+frontend stats # Define a listen section called "stats"
+    bind *:<%= node[:haproxy][:stats][:port] %>
+    mode http
+    stats enable  # Enable stats page
+    stats hide-version  # Hide HAProxy version
+    stats realm Haproxy\ Statistics  # Title text for popup window
+    stats uri /<%= node[:haproxy][:stats][:url] %>  # Stats URI
+    stats auth <%= node[:haproxy][:stats][:user] %>:<%= node[:haproxy][:stats][:password] %>  # Authentication credentials
+
+frontend status-monitor
+    bind            *:9998
+    monitor-uri     /
+
 frontend http-in
     bind *:80
     reqadd X-Forwarded-Proto:\ http
@@ -103,7 +123,7 @@ backend application-backend
     #enter the IP of your application here
     option httpchk GET /<%= node[:haproxy][:heath_check] %>
     default-server inter <%= node[:haproxy][:inter] %> fall <%= node[:haproxy][:fall] %>
-    server node1 <%= @backend_host %>:<%= @backend_port %> cookie A
+    server node1 <%= @backend_host %>:<%= @backend_port %> check resolvers myresolver #cookie A check-ssl verify none
 
 <% if !(node[:haproxy][:reverse_proxy].nil? || node[:haproxy][:reverse_proxy].empty?)  -%>
 <% node[:haproxy][:reverse_proxy].each do |key, value| %>
