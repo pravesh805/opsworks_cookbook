@@ -24,6 +24,19 @@ apt_package "php-fpm" do
 action :install
 end
 
+apt_package "php7.2-fpm" do
+action :install
+end
+
+apt_package "php7.2-zip" do
+action :install
+end
+
+apt_package "imagemagick" do
+action :install
+end
+
+
 # cookbook_file "/etc/php/7.0/cli/php.ini" do
 #   source "php.ini"
 #   mode "0644"
