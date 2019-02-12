@@ -24,9 +24,11 @@ sub vcl_recv {
 # Define the desktop device
   set req.http.X-Device = "WEB";
 
-  if (req.http.User-Agent ~ "iP(hone|od)" || req.http.User-Agent ~ "Android" || req.http.User-Agent ~ "iPad") {
+  if (req.http.User-Agent ~ "iP(hone|od)" || req.http.User-Agent ~ "iPad") {
     # Define smartphones and tablets
-    set req.http.X-Device = "MOBILE";
+    set req.http.X-Device = "MOBILE-IOS";
+  }elseif (req.http.User-Agent ~ "Android"){
+    set req.http.X-Device = "MOBILE-Android";
   }elseif (req.http.User-Agent ~ "SymbianOS" || req.http.User-Agent ~ "^BlackBerry" || req.http.User-Agent ~ "^SonyEricsson" || req.http.User-Agent ~ "^Nokia" ||
   req.http.User-Agent ~ "^SAMSUNG" || req.http.User-Agent ~ "^LG") {
     # Define every other mobile device
