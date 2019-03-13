@@ -58,8 +58,12 @@ frontend stats # Define a listen section called "stats"
     stats auth <%= node[:haproxy][:stats][:user] %>:<%= node[:haproxy][:stats][:password] %>  # Authentication credentials
 
 frontend status-monitor
-    bind            *:9998
+    bind            *:<%= node[:haproxy][:monit][:port] %>
     monitor-uri     /
+    no log
+    stats uri /
+    stats enable
+    stats show-desc
 
 frontend http-in
     bind *:80
