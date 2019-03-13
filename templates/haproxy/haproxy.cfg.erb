@@ -48,7 +48,7 @@ resolvers myresolver
     timeout retry         1s
     hold valid           10s
 
-frontend stats # Define a listen section called "stats"
+listen stats # Define a listen section called "stats"
     bind *:<%= node[:haproxy][:stats][:port] %>
     mode http
     stats enable  # Enable stats page
@@ -57,7 +57,7 @@ frontend stats # Define a listen section called "stats"
     stats uri /<%= node[:haproxy][:stats][:url] %>  # Stats URI
     stats auth <%= node[:haproxy][:stats][:user] %>:<%= node[:haproxy][:stats][:password] %>  # Authentication credentials
 
-frontend status-monitor
+listen status-monitor
     bind            *:<%= node[:haproxy][:monit][:port] %>
     monitor-uri     /
     no log
