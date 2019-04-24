@@ -60,10 +60,6 @@ listen stats # Define a listen section called "stats"
 listen status-monitor
     bind            *:<%= node[:haproxy][:monit][:port] %>
     monitor-uri     /
-    no log
-    stats uri /
-    stats enable
-    stats show-desc
 
 frontend http-in
     bind *:80
