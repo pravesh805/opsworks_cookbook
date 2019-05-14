@@ -4,6 +4,7 @@
 
 Listen <%= @port %>
 
+<% if (node[:apache][:ssl_enabled]) -%>
 <IfModule ssl_module>
         Listen 443
 </IfModule>
@@ -11,3 +12,4 @@ Listen <%= @port %>
 <IfModule mod_gnutls.c>
         Listen 443
 </IfModule>
+<% end %>
