@@ -64,8 +64,7 @@ listen status-monitor
 frontend http-in
     bind *:80
     reqadd X-Forwarded-Proto:\ http
-    #default_backend application-backend
-    redirect scheme https if !{ ssl_fc }
+    redirect scheme code 301 https if !{ ssl_fc }
 
 frontend https-in
     bind *:443 ssl crt /etc/haproxy/ssl/<%= @cert %>.pem
