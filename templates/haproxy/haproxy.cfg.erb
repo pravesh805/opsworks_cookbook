@@ -64,7 +64,52 @@ listen status-monitor
 frontend http-in
     bind *:80
     reqadd X-Forwarded-Proto:\ http
+    <% if (node[:apache][:ssl_enabled]) -%>
     redirect scheme https code 301 if !{ ssl_fc }
+    <% else  -%>
+    <% if !(node[:haproxy][:auth].nil? || node[:haproxy][:auth].empty?)  -%>
+    acl auth_ok http_auth(UsersFor_WP)
+    <% end %>
+    <% if !(node[:haproxy][:redirects].nil? || node[:haproxy][:redirects].empty?)  -%>
+    <% node[:haproxy][:redirects].each do |key, value| %>
+    http-request redirect scheme https drop-query append-slash if { path -m str /<%= key %> }
+    acl redirect_<%= key %> path_beg /<%= key %>/
+    http-request redirect location /<%= value %>/ if redirect_<%= key %>
+    <% end %>
+    <% end %>
+    <% if node[:haproxy][:protection] == 'all' -%>
+    <% if !(node[:haproxy][:allowed_pass].nil? || node[:haproxy][:allowed_pass].empty?)  -%>
+    <% node[:haproxy][:allowed_pass].each do |value| %>
+    acl allowed_pass path_beg <%= value %>
+    <% end %>
+    http-request auth if !allowed_pass !auth_ok
+    <% end %>
+    <% end %>
+    <% restricted_list = "" %>
+    <% if !(node[:haproxy][:restricted_page].nil? || node[:haproxy][:restricted_page].empty?)  -%>
+    <% node[:haproxy][:restricted_page].each do |key, value| %>
+    acl restricted_page_<%= key %> path_beg -i <%= value %>
+    <% restricted_list += "restricted_page_" + key + " "  %>
+    <% end %>
+    <% end %>
+    acl restricted_default_html path_beg,url_dec -i /default.html
+    http-request deny if restricted_default_html <%= restricted_list %>
+
+
+    http-request add-header X-CLIENT-IP %[src]
+
+    <% if !(node[:haproxy][:reverse_proxy].nil? || node[:haproxy][:reverse_proxy].empty?)  -%>
+    <% node[:haproxy][:reverse_proxy].each do |key, value| %>
+    <% if (value['force_slash'])  -%>
+    http-request redirect scheme https drop-query append-slash if { path -m str /<%= value['slug'] %> }
+    <% end -%>
+    acl prefixed-with-<%= key %>  path_beg /<%= value['slug'] %>/
+    use_backend <%= key %> if prefixed-with-<%= key %>
+    <% end %>
+    <% end %>
+    default_backend application-backend
+    <% end %>
+    
 
 frontend https-in
     bind *:443 ssl crt /etc/haproxy/ssl/<%= @cert %>.pem
