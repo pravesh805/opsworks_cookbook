@@ -36,6 +36,7 @@ end
 #   timeout 70
 # end
 
+if(node[:haproxy][:ssl_enabled])
 search('aws_opsworks_app', 'deploy:true').each do |app|
   template "#{node[:haproxy][:dir]}/ssl/#{app[:domains].first}.crt" do
       mode 0600

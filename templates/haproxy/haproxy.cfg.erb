@@ -64,7 +64,7 @@ listen status-monitor
 frontend http-in
     bind *:80
     reqadd X-Forwarded-Proto:\ http
-    <% if (node[:apache][:ssl_enabled]) -%>
+    <% if (node[:haproxy][:ssl_enabled]) -%>
     redirect scheme https code 301 if !{ ssl_fc }
     <% else  -%>
     <% if !(node[:haproxy][:auth].nil? || node[:haproxy][:auth].empty?)  -%>
