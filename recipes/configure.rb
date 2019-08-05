@@ -8,7 +8,7 @@
 
 search('aws_opsworks_app', 'deploy:true').each do |app|
   Chef::Log.info("Configuring WP app #{app[:shortname]}...")
-
+  deploy = node[:deploy]["#{app[:shortname]}"]
   if defined?(deploy[:application_type]) && deploy[:application_type] != 'php'
     Chef::Log.info("Skipping WP Configure  application #{app[:shortname]} as it is not defined as")
     next
@@ -29,7 +29,7 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
   end
 
 
-  deploy = node[:deploy]["#{app[:shortname]}"]
+  
   deployer= node[:deployer]
   apache = node[:apache]
   apache_user = (apache[:ap_user] rescue nil)
