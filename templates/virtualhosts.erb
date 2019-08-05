@@ -1,3 +1,7 @@
+Listen <%= @port %>
+<% if (ssl_enabled) -%>
+Listen 443
+<% end %>
 <VirtualHost *:<%= @port %>>
         <% if (node[:apache][:ssl_enabled]) -%>
         RewriteEngine On

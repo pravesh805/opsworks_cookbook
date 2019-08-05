@@ -53,13 +53,21 @@ if !(node[:apache][:protection].nil? || node[:apache][:protection].empty?)
   end
 end
 
+apache_ports = []
+
+node[:deploy].each do |app, deploy|
+  if(app[:apache])
+    apache_ports.push(app[:apache][:port])
+  end
+end
+
 template "/etc/apache2/ports.conf" do
   source "apache-ports.erb"
   group 'root'
   owner 'root'
   mode 0644
   variables(
-    :port => node[:apache]["port"]
+    :ports => apache_ports
   )
   notifies :run, resources(:bash => 'logdir_existence_and_restart_apache2')
 end
@@ -128,6 +136,7 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
       :document_root => document_root,
       :port => node[:deploy][app[:shortname]][:apache]["port"],
       :name => app[:shortname],
+      :ssl_enabled => node[:deploy][app[:shortname]][:apache]["ssl_enabled"],
       :servername => app[:domains].first
     )
     notifies :run, "execute[enable-sites]"
