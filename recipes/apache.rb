@@ -126,7 +126,7 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
     mode "0644"
     variables(
       :document_root => document_root,
-      :port => node[:apache]["port"],
+      :port => app[:apache]["port"],
       :name => app[:shortname],
       :servername => app[:domains].first
     )
