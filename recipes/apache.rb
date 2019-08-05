@@ -56,8 +56,8 @@ end
 apache_ports = []
 
 node[:deploy].each do |app, deploy|
-  if(defined?(app[:apache]))
-    apache_ports.push(app[:apache][:port])
+  if(defined?(deploy[:apache]))
+    apache_ports << deploy[:apache][:port]
   end
 end
 
