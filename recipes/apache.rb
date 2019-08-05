@@ -57,6 +57,7 @@ apache_ports = []
 
 node[:deploy].each do |app, deploy|
   if(defined?(deploy[:apache]))
+    Chef::Log.info("apache port configured #{deploy[:apache][:port]}")
     apache_ports << deploy[:apache][:port]
   end
 end
