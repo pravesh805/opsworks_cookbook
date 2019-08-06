@@ -110,7 +110,7 @@ frontend http-in
     default_backend application-backend
     <% end %>
     
-
+<% if (node[:haproxy][:ssl_enabled]) -%>
 frontend https-in
     bind *:443 ssl crt /etc/haproxy/ssl/<%= @cert %>.pem
     reqadd X-Forwarded-Proto:\ https  
@@ -157,9 +157,12 @@ frontend https-in
     <% end %>
 
     default_backend application-backend
+<% end %>
 
 backend application-backend
+    <% if (node[:haproxy][:ssl_enabled]) -%>
     redirect scheme https if !{ ssl_fc }
+    <% end %>
     balance leastconn
     option httpclose
     option forwardfor
