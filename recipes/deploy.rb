@@ -49,7 +49,6 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
 
 	    app_symlink = ['log', 'tmp/pids', 'public/system']
 
-	    {"config/keys.php" => "keys.php", "config/health-check.php" => "health-check.php"}
 	    symlinks_list = []
 	    symlinks = node[:deploy][app[:shortname]][:symlinks]
 	    symlinks.each do |key, value|
@@ -59,8 +58,9 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
 
 	    create_symlink = {"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}
 	    symlinks.each do |key, value|
-	    	create_symlink << {key => value}
+	    	create_symlink[:key] = value
 	    end
+	    
 	    deploy deploy_to do
 	      provider Chef::Provider::Deploy::Timestamped
 	      keep_releases 2
