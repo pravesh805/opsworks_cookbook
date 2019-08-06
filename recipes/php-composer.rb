@@ -1,5 +1,6 @@
-deploy_to = "/srv/www/#{app[:shortname]}"
+
 node[:deploy].each do |application, deploy|
+  deploy_to = "/srv/www/#{application[:shortname]}"
   script "install_composer" do
     interpreter "bash"
     user "root"
