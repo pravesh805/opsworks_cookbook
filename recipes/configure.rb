@@ -129,7 +129,8 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
       owner deployer[:name]
 
       variables(
-        :configs  => (deploy[:configs] rescue nil),
+        :configs  => (deploy[:configs] rescue nil)
+        )
     end
 
     template "#{deploy_to}/shared/config/health-check.php" do
