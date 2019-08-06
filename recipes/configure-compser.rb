@@ -15,6 +15,20 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
     Chef::Log.info("Skipping Lumen Configure  application #{app[:shortname]} as it is not defined as")
     next
   end
+
+  create_deploy_dir(app, File.join('shared'))
+  create_deploy_dir(app, File.join('shared', 'config'))
+  create_deploy_dir(app, File.join('shared', 'log'))
+  create_deploy_dir(app, File.join('shared', 'scripts'))
+  create_deploy_dir(app, File.join('shared', 'sockets'))
+  create_deploy_dir(app, File.join('shared', 'system'))
+  create_dir("/run/lock/#{app['shortname']}")
+
+  pids_link_path = File.join(deploy_dir(app), 'shared', 'pids')
+  link pids_link_path do
+    to "/run/lock/#{app['shortname']}"
+    not_if { ::File.exist?(pids_link_path) }
+  end
   
   deployer= node[:deployer]
   apache = node[:apache]
@@ -33,7 +47,7 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
   end
 
   template "#{deploy_to}/shared/config/health-check.php" do
-    source "health-check.php.erb"
+    source "health-check-lumen.php.erb"
     mode 0660
     group deployer[:group]
     owner deployer[:name]
