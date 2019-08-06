@@ -7,15 +7,12 @@
  
 node[:deploy].each do |application, deploy|
 	Chef::Log.info("Uploading Assests to S3 Bucket #{application}...")
-
+	deploy = node[:deploy][application]
 	if defined?(deploy[:application_type]) && deploy[:application_type] != 'php'
 	    Chef::Log.info("Skipping Uploading Assests to S3 Bucket  application #{application} as it is not defined as #{deploy[:application_type]}")
 	    next
     end
-    tmp = deploy
-
-	deploy = node[:deploy][application]
-	 
+    
 	aws_key = (deploy[:aws][:s3_access_key] rescue nil)
 	aws_secret = (deploy[:aws][:s3_secret_key] rescue nil)
 	bucket_name = (deploy[:aws][:s3_bucket] rescue nil)
