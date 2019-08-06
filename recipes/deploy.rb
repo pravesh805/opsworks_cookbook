@@ -51,7 +51,7 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
 
 	    {"config/keys.php" => "keys.php", "config/health-check.php" => "health-check.php"}
 	    symlinks_list = []
-	    symlinks = node[:deployer][app[:shortname]][:symlinks]
+	    symlinks = node[:deploy][app[:shortname]][:symlinks]
 	    symlinks.each do |key, value|
 	    	symlinks_list << value
 	    end
