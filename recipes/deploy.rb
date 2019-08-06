@@ -47,7 +47,20 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
 	        :ssh_key => app_source[:ssh_key]
 	    ) if app_source[:type].to_s == 'git'
 
+	    app_symlink = ['log', 'tmp/pids', 'public/system']
 
+	    {"config/keys.php" => "keys.php", "config/health-check.php" => "health-check.php"}
+	    symlinks_list = []
+	    symlinks = node[:deployer][app[:shortname]][:symlinks]
+	    symlinks.each do |key, value|
+	    	symlinks_list << value
+	    end
+	    app_symlink << symlinks_list
+
+	    create_symlink = {"system" => "public/system", "pids" => "tmp/pids", "log" => "log"}
+	    symlinks.each do |key, value|
+	    	create_symlink << {key => value}
+	    end
 	    deploy deploy_to do
 	      provider Chef::Provider::Deploy::Timestamped
 	      keep_releases 2
@@ -57,10 +70,10 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
 	      revision app_source[:revision]
 	      migrate false
 	      environment({"HOME" => home, "APP_NAME" => app[:shortname]})
-	      purge_before_symlink(['log', 'tmp/pids', 'public/system', "keys.php", "health-check.php"])
+	      purge_before_symlink(app_symlink)
 	      create_dirs_before_symlink(['tmp', 'public', 'config'])
 	      symlink_before_migrate({})
-	      symlinks({"system" => "public/system", "pids" => "tmp/pids", "log" => "log", "config/keys.php" => "keys.php", "config/health-check.php" => "health-check.php"})
+	      symlinks(create_symlink)
 	      action :deploy
 
 	      case app_source[:type].to_s
