@@ -124,11 +124,6 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
   #   owner release_user
   #   recursive true
   # end
-
-  execute "enable-sites" do
-    command "a2ensite #{app[:shortname]}"
-    action :nothing
-  end
  
   template "/etc/apache2/sites-available/#{app[:shortname]}.conf" do
     source "virtualhosts.erb"
@@ -142,6 +137,11 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
     )
     notifies :run, "execute[enable-sites]"
     notifies :restart, "service[apache2]"
+  end
+
+  execute "enable-sites" do
+    command "a2ensite #{app[:shortname]}"
+    action :nothing
   end
 
   execute "keepalive" do
