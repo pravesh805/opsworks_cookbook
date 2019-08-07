@@ -141,7 +141,7 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
 
   execute "enable-sites" do
     command "a2ensite #{app[:shortname]}"
-    action :nothing
+    action :run
   end
 
   execute "keepalive" do
