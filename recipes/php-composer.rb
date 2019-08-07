@@ -21,10 +21,20 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
     only_if { ::File.exist?("#{deploy_to}/current/composer.json")}
   end
 
-  directory "/srv/www/#{app[:shortname]}/current/storage" do
-    action :create
-    recursive true
-    mode 0775
+  script "chmod_storage" do
+    interpreter "bash"
+    user "root"
+    cwd "#{deploy_to}/current"
+    code <<-EOH
+    chmod 775 -R storage/
+    EOH
     only_if { ::File.exist?("#{deploy_to}/current/composer.json")}
   end
+
+  # directory "/srv/www/#{app[:shortname]}/current/storage" do
+  #   action :create
+  #   recursive true
+  #   mode 0775
+  #   only_if { ::File.exist?("#{deploy_to}/current/composer.json")}
+  # end
 end
