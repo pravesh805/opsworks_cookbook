@@ -7,6 +7,11 @@
 # Create the Wordpress config file wp-config.php with corresponding values
 
 search('aws_opsworks_app', 'deploy:true').each do |app|
+  if defined?(deploy[:enabled]) && deploy[:enabled]
+    Chef::Log.info("Skipping Configure  application #{app[:shortname]}")
+    next
+  end
+
   Chef::Log.info("Configuring WP app #{app[:shortname]}...")
   deploy = node[:deploy]["#{app[:shortname]}"]
   
@@ -32,8 +37,8 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
   apache_password = (apache[:ap_password] rescue nil)
   deploy_to = "/srv/www/#{app[:shortname]}"
 
-  if defined?(deploy[:application_type]) && deploy[:application_type] == 'php'
-    Chef::Log.info("Skipping WP Configure  application #{app[:shortname]} as it is not defined as")
+  if defined?(deploy[:application_type]) && (deploy[:application_type] == 'php') && (deploy[:enabled])
+    Chef::Log.info("Deploying WP Configure  application #{app[:shortname]}")
     
     template "#{deploy_to}/shared/config/keys.php" do
       source "keys.php.erb"
@@ -121,7 +126,8 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
       )
     end
 
-  elsif defined?(deploy[:application_type]) && deploy[:application_type] == 'lumen'
+  elsif defined?(deploy[:application_type]) && (deploy[:application_type] == 'lumen') && (deploy[:enabled])
+    Chef::Log.info("Deploying Lumen Configure  application #{app[:shortname]}")
     template "#{deploy_to}/shared/config/.env" do
       source "env.erb"
       mode 0660

@@ -115,6 +115,10 @@ end
 Chef::Log.info("Create Virtual Hosts Files......")
 #Virtual Hosts Files
 search('aws_opsworks_app', 'deploy:true').each do |app|
+  if(!node[:deploy][app[:shortname]][:enabled])
+    Chef::Log.info("Skipping apache config for application #{app[:shortname]}")
+    next
+  end
   document_root = "/srv/www/#{app[:shortname]}/" + node[:deploy][app[:shortname]][:apache][:document_root]
   release_user = node[:deployer]["name"]
   release_group = node[:deployer]["group"]

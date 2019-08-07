@@ -11,7 +11,13 @@ include_recipe 'OpsWorks::configure'
 
 search('aws_opsworks_app', 'deploy:true').each do |app|
 	Chef::Log.info("********** Starting To Deploy App: '#{app[:name]}' **********")
-	 
+
+	deploy_app = node[:deploy]["#{app[:shortname]}"]
+	if defined?(deploy_app[:enabled]) && deploy_app[:enabled]
+		Chef::Log.info("Skipping WP Configure  application #{app[:shortname]} as it is not defined")
+		next
+	end
+
 	deploy_to = "/srv/www/#{app[:shortname]}"
 	symbolic_release_path = "/srv/www/#{app[:shortname]}/current"
 	release_user = node[:deployer]["name"]

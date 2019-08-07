@@ -9,7 +9,7 @@ search('aws_opsworks_app', 'deploy:true').each do |app|
 
 	deploy = node[:deploy]["#{app[:shortname]}"]
 	
-	if defined?(deploy[:application_type]) && deploy[:application_type] != 'php'
+	if defined?(deploy[:application_type]) && (deploy[:application_type] != 'php') && (deploy[:enabled])
 		Chef::Log.info("Skipping WP Configure  application #{app[:shortname]} as it is not defined")
 		next
 	end
