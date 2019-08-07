@@ -7,14 +7,14 @@
 # Create the Wordpress config file wp-config.php with corresponding values
 
 search('aws_opsworks_app', 'deploy:true').each do |app|
-  if defined?(deploy[:enabled]) && deploy[:enabled]
+  Chef::Log.info("Configuring WP app #{app[:shortname]}...")
+  deploy = node[:deploy]["#{app[:shortname]}"]
+
+  if defined?(deploy[:enabled]) && !deploy[:enabled]
     Chef::Log.info("Skipping Configure  application #{app[:shortname]}")
     next
   end
 
-  Chef::Log.info("Configuring WP app #{app[:shortname]}...")
-  deploy = node[:deploy]["#{app[:shortname]}"]
-  
   create_deploy_dir(app, File.join('shared'))
   create_deploy_dir(app, File.join('shared', 'config'))
   create_deploy_dir(app, File.join('shared', 'log'))
