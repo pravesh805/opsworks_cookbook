@@ -43,7 +43,7 @@ userlist UsersFor_WP
 
 #:::haproxy
 resolvers myresolver
-    nameserver vpc <%= node[:haproxy][:resovler] %>
+    nameserver vpc <%= node[:haproxy][:resolver] %>
     resolve_retries       30
     timeout retry         1s
     hold valid           10s
