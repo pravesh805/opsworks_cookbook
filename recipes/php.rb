@@ -28,7 +28,15 @@ apt_package "php7.2-fpm" do
 action :install
 end
 
+apt_package "php7.2-mbstring" do
+action :install
+end
+
 apt_package "php7.2-zip" do
+action :install
+end
+
+apt_package "php7.2-xml" do
 action :install
 end
 
