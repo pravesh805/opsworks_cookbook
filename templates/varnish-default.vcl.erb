@@ -90,12 +90,6 @@ sub vcl_recv {
   if (req.url ~ "(wp-login|wp-admin)" || req.url ~ "preview=true" || req.url ~ "xmlrpc.php") {
     return (pass);
   }
-	# always pass through posted requests and those with basic auth
-  # if ( req.request == "POST" || req.http.Authorization ) {
-	if ( req.http.Authorization )
-  {        		
-    return (pass);
-  }
 
   if ( req.method == "POST" && req.url ~ "api/" )
   {           
