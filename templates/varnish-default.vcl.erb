@@ -132,6 +132,11 @@ sub vcl_backend_response {
   if (beresp.status == 503 && bereq.retries < 3 ) {
     return(retry);
   }
+  if (beresp.http.Page-Action == "Router"){
+      set beresp.http.X-Cacheable = "NO:Router";
+      set beresp.uncacheable = true;
+      return (deliver);
+  }
   if (bereq.http.Cookie ~ "(UserID|_session|wordpress_)") {
   	# if we get a session cookie...caching is a no-go
     set beresp.http.X-Cacheable = "NO:Got Session";
@@ -145,7 +150,7 @@ sub vcl_backend_response {
   } elsif (beresp.http.set-cookie) {
     if (beresp.http.set-cookie ~ "pll_language"){
       # Varnish determined the object was cacheable
-      set beresp.http.X-Cacheable = "NO:PLL";
+      set beresp.http.X-Cacheable = "YES";
 
       # Remove Expires from backend, it's not long enough
       unset beresp.http.expires;
