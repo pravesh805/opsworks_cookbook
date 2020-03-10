@@ -40,6 +40,10 @@ apt_package "php7.2-xml" do
 action :install
 end
 
+apt_package "php7.2-gd" do
+action :install
+end
+
 apt_package "imagemagick" do
 action :install
 end
