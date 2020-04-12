@@ -64,6 +64,11 @@ listen status-monitor
 frontend http-in
     bind *:80
     reqadd X-Forwarded-Proto:\ http
+
+    # IP Blacklisting
+    acl is-blacklisted-ip src -f /etc/haproxy/blockedlisted.ips
+    http-request deny if is-blacklisted-ip
+    
     <% if (node[:haproxy][:ssl_enabled]) -%>
     redirect scheme https code 301 if !{ ssl_fc }
     <% else  -%>
@@ -114,6 +119,10 @@ frontend http-in
 frontend https-in
     bind *:443 ssl crt /etc/haproxy/ssl/<%= @cert %>.pem
     reqadd X-Forwarded-Proto:\ https  
+
+    # IP Blacklisting
+    acl is-blacklisted-ip src -f /etc/haproxy/blockedlisted.ips
+    http-request deny if is-blacklisted-ip
 
     <% if !(node[:haproxy][:auth].nil? || node[:haproxy][:auth].empty?)  -%>
     acl auth_ok http_auth(UsersFor_WP)

@@ -6,6 +6,13 @@
 
 Chef::Log.info("Start configuring haproxy....")
 
+template "/etc/haproxy/blacklistedips.ips" do
+      source "haproxy/blacklistedips.ips.erb"
+      mode 0660
+
+      notifies :restart, "service[haproxy]"
+end
+
 template "/etc/haproxy/haproxy.cfg" do
       source "haproxy/haproxy.cfg.erb"
       mode 0660
