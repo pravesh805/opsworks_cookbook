@@ -66,7 +66,7 @@ frontend http-in
     reqadd X-Forwarded-Proto:\ http
 
     # IP Blacklisting
-    acl is-blacklisted-ip src -f /etc/haproxy/blockedlisted.ips
+    acl is-blacklisted-ip src -f /etc/haproxy/blacklisted.ips
     http-request deny if is-blacklisted-ip
     
     <% if (node[:haproxy][:ssl_enabled]) -%>
@@ -121,7 +121,7 @@ frontend https-in
     reqadd X-Forwarded-Proto:\ https  
 
     # IP Blacklisting
-    acl is-blacklisted-ip src -f /etc/haproxy/blockedlisted.ips
+    acl is-blacklisted-ip src -f /etc/haproxy/blacklisted.ips
     http-request deny if is-blacklisted-ip
 
     <% if !(node[:haproxy][:auth].nil? || node[:haproxy][:auth].empty?)  -%>
