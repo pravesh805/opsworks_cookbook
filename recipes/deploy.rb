@@ -9,7 +9,8 @@ Chef::Log.info("Start deplying the app....")
 prepare_recipe
 include_recipe 'OpsWorks::configure'
 
-search('aws_opsworks_app', 'deploy:true').each do |app|
+node[:deploy].each do |application, deploy|
+    app = application
 	Chef::Log.info("********** Starting To Deploy App: '#{app[:name]}' **********")
 	 
 	deploy_to = "/srv/www/#{app[:shortname]}"

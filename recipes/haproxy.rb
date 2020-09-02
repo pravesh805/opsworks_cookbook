@@ -36,7 +36,8 @@ end
 #   timeout 70
 # end
 
-search('aws_opsworks_app', 'deploy:true').each do |app|
+node[:deploy].each do |application, deploy|
+  app = application
   template "#{node[:haproxy][:dir]}/ssl/#{app[:domains].first}.crt" do
       mode 0600
       source 'haproxy/ssl.key.erb'

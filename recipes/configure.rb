@@ -6,7 +6,8 @@
 
 # Create the Wordpress config file wp-config.php with corresponding values
 
-search('aws_opsworks_app', 'deploy:true').each do |app|
+node[:deploy].each do |application, deploy|
+  app = application
   Chef::Log.info("Configuring WP app #{app[:shortname]}...")
 
   if defined?(deploy[:application_type]) && deploy[:application_type] != 'php'

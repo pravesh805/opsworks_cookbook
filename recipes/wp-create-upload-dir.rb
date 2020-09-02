@@ -4,7 +4,8 @@
 #
 # Copyright:: 2018, Moayyad Faris, All Rights Reserved.
 
-search('aws_opsworks_app', 'deploy:true').each do |app|
+node[:deploy].each do |application, deploy|
+    app = application
 	Chef::Log.info("Creating upload directory for #{app}...")
 
 	if defined?(deploy[:application_type]) && deploy[:application_type] != 'php'
