@@ -15,6 +15,11 @@ node[:deploy].each do |application, deploy|
     tmp = deploy
 
 	deploy = node[:deploy][application]
+
+	if !deploy[:deploy]
+	    Chef::Log.info("Skipping APP application #{app[:shortname]}")
+	    next
+	end
 	 
 	aws_key = (deploy[:aws][:s3_access_key] rescue nil)
 	aws_secret = (deploy[:aws][:s3_secret_key] rescue nil)

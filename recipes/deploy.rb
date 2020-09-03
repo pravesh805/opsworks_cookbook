@@ -10,6 +10,10 @@ prepare_recipe
 include_recipe 'OpsWorks::configure'
 
 search('aws_opsworks_app', 'deploy:true').each do |app|
+	if !node[:deploy]["#{app[:shortname]}"][:deploy]
+	    Chef::Log.info("Skipping APP application #{app[:shortname]}")
+	    next
+	end
 	Chef::Log.info("********** Starting To Deploy App: '#{app[:name]}' **********")
 	 
 	deploy_to = "/srv/www/#{app[:shortname]}"

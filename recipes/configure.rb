@@ -7,7 +7,16 @@
 # Create the Wordpress config file wp-config.php with corresponding values
 
 search('aws_opsworks_app', 'deploy:true').each do |app|
+  if !node[:deploy]["#{app[:shortname]}"][:deploy]
+    Chef::Log.info("Skipping APP application #{app[:shortname]}")
+    next
+  end
   Chef::Log.info("Configuring WP app #{app[:shortname]}...")
+
+  if defined?(deploy[:application_type]) && deploy[:application_type] != 'php'
+    Chef::Log.info("Skipping WP Configure  application #{app[:shortname]} as it is not defined as")
+    next
+  end
 
   if defined?(deploy[:application_type]) && deploy[:application_type] != 'php'
     Chef::Log.info("Skipping WP Configure  application #{app[:shortname]} as it is not defined as")

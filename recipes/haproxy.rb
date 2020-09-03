@@ -37,6 +37,10 @@ end
 # end
 
 search('aws_opsworks_app', 'deploy:true').each do |app|
+  if !node[:deploy]["#{app[:shortname]}"][:deploy]
+    Chef::Log.info("Skipping APP application #{app[:shortname]}")
+    next
+  end
   template "#{node[:haproxy][:dir]}/ssl/#{app[:domains].first}.crt" do
       mode 0600
       source 'haproxy/ssl.key.erb'
