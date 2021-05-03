@@ -190,6 +190,11 @@ backend <%= key %>
     <% end -%>
     http-request set-header Host <%= value['host'] %>
     server node1 <%= value['host'] %>:80
+    <% if value[:headers] -%>
+    <% value[:headers].each do |keyHeader, valueHeader| %>
+    http-response set-header <%= keyHeader %> <%= valueHeader %>
+    <% end %>
+    <% end -%>
     # Map url path as ProxyPass does
     <% if (value['path'].nil?)  -%>
     <% if (value['force_slash'])  -%>
