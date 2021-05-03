@@ -192,7 +192,7 @@ backend <%= key %>
     server node1 <%= value['host'] %>:80
     <% if value[:headers] -%>
     <% value[:headers].each do |keyHeader, valueHeader| %>
-    http-response set-header <%= keyHeader %> <%= valueHeader %>
+    http-response set-header <%= keyHeader %> "<%= valueHeader %>"
     <% end %>
     <% end -%>
     # Map url path as ProxyPass does
